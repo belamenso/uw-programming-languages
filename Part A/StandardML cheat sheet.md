@@ -10,6 +10,9 @@ Unary negation is written as `~`, not `-`:
 ```sml
 fun abs a = if a <= 0 then ~a else a
 ```
+`<>` stands for not equal. Equality types have `=` and `<>` defined on them. You cannot check
+equality between real and an int without converting one to another's type first.
+
 Semicolons are mostly optional in files, sometimes requied in REPL (?).
 
 Import source file (by evaluating pasted contents in REPL?):
@@ -81,6 +84,25 @@ fun length []    = 0
   | length x::xs = 1 + length xs 
 ```
 
+## Standard library
+### Operators
+* `"hello" ^ "world"` - string concatenation
+* `[1,2] @ [3,4]` - append
+* `~10 = 20 - 10` - negate
+* `mod`, `div`
+* `Real.fromInt`
+### Option
+```sml
+case x of
+  NONE   => "nothing"
+  SOME x => "something is here"
+```
+Additionally defined functions (usually inferior style to pattern matching):
+```sml
+if isSome x
+then "something is " ^ valOf x
+else "nothing"
+```
 ## Style
 I'm not sure yet, REPL and many resources place `:` separated by spaces between
 variable name and its type. I think I prefer ommiting the first space, it seems more
