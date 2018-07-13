@@ -28,7 +28,7 @@ val a = 10;
 val a = 42; (* OK, old a is shadowed *)
 ```
 ### Tuples
-N-tuples are syntactic sugar for records wiht fields 1..n.
+N-tuples are syntactic sugar for records wiht fields 1..n. Elements may be of different types.
 ```sml
 val t1 = (1,2,3)
 val t2: int * bool = (0, false)
@@ -39,6 +39,46 @@ permits us to easily compose functions accepting/returning multiple arguments.
 ```sml
 fun rotate_left (a, b, c) = (b, c, a);
 fun rotate_right triple = rotate_left (rotate_left (triple))
+```
+### Lists
+Elements must be of the same type. Pattern matches are usually prefered over `null`, `hs`, `tl`.
+```sml
+val a: int list = [1,2,3]
+[] (* 'a list *)
+null [] (* true *)
+hd [1] (* 1 *)
+tl [1] (* [] *)
+1::2::[] (* [1,2] *)
+```
+### Conditionals and boolean operators
+```sml
+if predicate then val1 else val2;
+true andalso false;
+x orelse y
+```
+### Let expressions
+```sml
+let
+  val X = 10
+  fun fact n = if n = 0 then 1 else n * fact (n - 1)
+in
+  fact x
+end
+```
+### Functions and lambdas
+Lambdas are introduces using `fn` keyword:
+```sml
+map(fn x => x * x, numbers)
+```
+All functions accept exactly 1 argument. Multiple arguments can be simulated with
+a tuple. In place of function argument you can place any pattern. Alternative syntax
+with multiple disjoint pattern matches.
+```sml
+fun square x = x * x;
+fun square (x: int): int = x * x;
+fun get_name {name=n, surname=s, age=a} = n;
+fun length []    = 0
+  | length x::xs = 1 + length xs 
 ```
 
 ## Style
