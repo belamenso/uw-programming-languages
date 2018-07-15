@@ -30,6 +30,19 @@ No assignment, next declaration shadows previous one.
 val a = 10;
 val a = 42; (* OK, old a is shadowed *)
 ```
+`val`s accept patterns
+```sml
+val {name=n, balance=b} = {name="John", balance=3795.8}
+val x1::x2::[] = [1,2]
+```
+The pattern must match however; this raises error:
+```sml
+val NONE = SOME 10
+```
+
+Assign to `_` to ignore value. You can repeatedly assign to `_` in patterns (which wouldn't
+work with normal names, it's a special form). `_` is also used as a universal match-all pattern.
+
 ### Tuples
 N-tuples are syntactic sugar for records wiht fields 1..n. Elements may be of different types.
 ```sml
@@ -43,6 +56,18 @@ permits us to easily compose functions accepting/returning multiple arguments.
 fun rotate_left (a, b, c) = (b, c, a);
 fun rotate_right triple = rotate_left (rotate_left (triple))
 ```
+
+### Records
+Unordered data types with fields identified by symbols.
+```sml
+val studentData = {name = "John", surname = "Smith", id = 1234145}
+(* val studentData : {name: string, surname: string, id: int}
+```
+You refer to the field with # and its name:
+```sml
+#name {name = "John", surname = "Smith", id = 1234145} (* "John" *)
+```
+
 ### Lists
 Elements must be of the same type. Pattern matches are usually prefered over `null`, `hs`, `tl`.
 ```sml
@@ -53,13 +78,55 @@ hd [1] (* 1 *)
 tl [1] (* [] *)
 1::2::[] (* [1,2] *)
 ```
+
+### Custom data types
+Tagged unions
+```sml
+datatype mytype = TwoInts of int * int
+                | Str of string
+                | Pizza
+val a = Str "helo"; (* val a : mytype *)
+val b = Pizza; (* val b : mytype *)
+
+datatype my_list = Empty
+                 | Cons of int * my_list
+```
+
+### Type synonyms
+```sml
+type name = string
+type record = {name: string, balance: real}
+```
+Sometimes REPL chooses one of equivalent aliased types, it depends on internal representation
+and optimizations. 
+
+### Pattern matching
+```sml
+fun append xs ys =
+  case xs of
+    []    => ys
+  | x::xs => x::(append xs ys)
+
+val b = case f x of
+          NONE   => []
+        | SOME x => [x]
+```
+Branches are checked top-down.
+
+Nested patterns are also possible: `x1::x2::xs`.
+
+Integer literals can be used in patterns: `StudentID 1 => handle ()`.
+
 ### Conditionals and boolean operators
+Both branches need to be of the same type.
 ```sml
 if predicate then val1 else val2;
 true andalso false;
 x orelse y
 ```
+
 ### Let expressions
+Let bindings can use previously defined let bindings (like `let*` in Racket).
 ```sml
 let
   val X = 10
@@ -82,6 +149,42 @@ fun square (x: int): int = x * x;
 fun get_name {name=n, surname=s, age=a} = n;
 fun length []    = 0
   | length x::xs = 1 + length xs 
+```
+You cannot refer to function bindings that were not declared yet (e.g. are below in the file).
+
+`fun` accepts a pattern
+```sml
+fun sum2 (a, b) = a + b
+fun ageIn10Years {name=_, age=a} = a + 10
+```
+
+### Currying
+Functions with multiple patterns are automatically curried.
+```sml
+fun filter pred xs =
+  case xs of
+    [] => []
+  | x::xs => if pred x then x::(filter pred xs) else pred xs
+val filterEven = filter (fn x => x mod 2 = 0)
+```
+
+## Type system
+### Type constructors
+Produce types
+```sml
+SOME 10 (* int option *)
+[1,2,3] (* int list *)
+```
+
+### Polymorphic types
+`'a` pronouced like greek letters.
+```sml
+fn x => x (* 'a -> 'a *)
+
+fun length xs = (* length: 'a list -> int *)
+  case xs of
+    []    => 0
+  | x::xs => 1 + length xs
 ```
 
 ## Standard library
