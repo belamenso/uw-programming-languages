@@ -117,6 +117,8 @@ Nested patterns are also possible: `x1::x2::xs`.
 
 Integer literals can be used in patterns: `StudentID 1 => handle ()`.
 
+When using pattern mathing, there is no need to specify types.
+
 ### Conditionals and boolean operators
 Both branches need to be of the same type.
 ```sml
@@ -168,6 +170,15 @@ fun filter pred xs =
 val filterEven = filter (fn x => x mod 2 = 0)
 ```
 
+### Exceptions
+```sml
+raise List.Empty
+exception MyException of int * string
+raise MyException (10, "hello")
+```
+Handling exceptions is dynamic, not static since who gets to handle it depends on dynamic
+call stack, not on any lexical scope.
+
 ## Type system
 ### Type constructors
 Produce types
@@ -186,6 +197,15 @@ fun length xs = (* length: 'a list -> int *)
     []    => 0
   | x::xs => 1 + length xs
 ```
+
+### Equality types
+`''a` is an equality type and has `=` defined.
+
+### No function can accept tuples of different sizes
+```sml
+fun f x = #1 x + #2 x (* won't typecheck *)
+```
+`f` won't typecheck because x could be both (1,2 ): int \* int and (1,2,3): int \* int \* int.
 
 ## Standard library
 ### Operators
