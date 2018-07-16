@@ -159,6 +159,17 @@ You cannot refer to function bindings that were not declared yet (e.g. are below
 fun sum2 (a, b) = a + b
 fun ageIn10Years {name=_, age=a} = a + 10
 ```
+`o` (lowercase O) stands for function composition
+```sml
+f o g <=> fn x => f (g x)
+```
+
+### Infix operators
+```sml
+infix |>
+fun x |> f = f x
+10 |> (fn x => x + 1) |> (fx x => 10 * x)
+```
 
 ### Currying
 Functions with multiple patterns are automatically curried.
@@ -178,6 +189,19 @@ raise MyException (10, "hello")
 ```
 Handling exceptions is dynamic, not static since who gets to handle it depends on dynamic
 call stack, not on any lexical scope.
+
+## Imperative style
+
+### Do
+`(e1; e2; .. ; en)` executes all for side effects and returns the value of `en`.
+```sml
+fun length xs =
+  case xs of
+    [] => (print "finished\n";
+           0)
+  | x::xs => (print "iterating\n";
+              1 + length xs)
+```
 
 ## Type system
 ### Type constructors
