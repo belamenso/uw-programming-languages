@@ -3,6 +3,9 @@
 [Standard ML of New Jersey](https://www.smlnj.org/ "Standard ML of New Jersey")
 
 [Full Standard ML '97 Grammar](https://people.mpi-sws.org/~rossberg/sml.html "SML Grammar")
+
+[NJ SML Standard Library Documentation](http://sml-family.org/Basis/manpages.html)
+
 ```sml
 (* comments *)
 ```
@@ -164,11 +167,29 @@ fun ageIn10Years {name=_, age=a} = a + 10
 f o g <=> fn x => f (g x)
 ```
 
+### Mutual recursion
+Since in SML function definitions cannot refer to functions below them in a file
+```sml
+fun odd n = case n of
+              0 => false
+            | 1 => true
+            | n => even (n - 1)
+and even n = case n of
+              0 => true
+            | 1 => false
+            | n => odd (n - 1)
+```
+You could always simulate mutual recursion:
+```sml
+fun f g args = ...
+fun g args = ... f g ...
+```
+
 ### Infix operators
 ```sml
 infix |>
 fun x |> f = f x
-10 |> (fn x => x + 1) |> (fx x => 10 * x)
+10 |> (fn x => x + 1) |> (fn x => 10 * x)
 ```
 
 ### Currying
@@ -203,6 +224,16 @@ fun length xs =
               1 + length xs)
 ```
 
+### Mutation
+`ref exp` creates a pointer to a mutable data which is initialized with value of `exp`.
+```sml
+val ptr_x = ref 10; (* : int ref *)
+val ptr_y = ptr_x; (* same data, different pointers *)
+val _ = ptr_x := 20 (* update value *)
+val res = !ptr_x (* read current value *)
+```
+The pointers are themselves immutable, they just point to a mutable memory area.
+
 ## Type system
 ### Type constructors
 Produce types
@@ -230,6 +261,25 @@ fun length xs = (* length: 'a list -> int *)
 fun f x = #1 x + #2 x (* won't typecheck *)
 ```
 `f` won't typecheck because x could be both (1,2 ): int \* int and (1,2,3): int \* int \* int.
+
+### Recursive data definitions
+```sml
+type set = {insert: int -> set} (* won't work *)
+datatype set = S of {insert: int -> set} (* ok *)
+```
+```sml
+datatype t1 = T2 of t2           
+and      t2 = T1 of t1;
+```
+
+### Value restriction
+?
+
+## Module system
+### Read module's signature in REPL
+```sml
+signature x = LIST; (* will print out LIST's signature *)
+```
 
 ## Standard library
 ### Operators
