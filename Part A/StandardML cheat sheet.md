@@ -276,9 +276,38 @@ and      t2 = T1 of t1;
 ?
 
 ## Module system
+Structures introduce namespaces. If a structure implements a signature, the outside world
+knows only about the things introduced in the signature.
+
+From inside a module we use normal function names, from outside we have to prefix wiht `ModName.`.
+
+`open ModuleName` lets us use all module's bindigns without having to prefix them.
+
+```sml
+let open ModuleName in
+  exprs
+end
+```
+
 ### Read module's signature in REPL
 ```sml
 signature x = LIST; (* will print out LIST's signature *)
+```
+
+### Signatures
+```sml
+signature MYSIGNATURE =
+sig
+  type rational (* rational's implementation is hidden, clients can only use them by our interface *)
+  type rational2 = float (* now they can see the implementation *)
+  val f: int -> int
+  val g: (bool * string) -> string option
+end
+```
+### Structures
+```sml
+structure MyModule = struct ...bindings... end
+structue Implemtnation :> SOME_SIGNATURE = struct ...bindings... end
 ```
 
 ## Standard library
